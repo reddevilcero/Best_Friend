@@ -1,6 +1,2 @@
-require "best_friend/version"
-
-module BestFriend
-  class Error < StandardError; end
-  # Your code goes here...
-end
+require_relative "best_friend/version"
+require_relative './best_friend/cli'
