@@ -18,7 +18,7 @@ class CLI
   def scrap_data
     self.all_breeds_list = Scraper.all_breeds
     self.breeds_by_Characteristics = Scraper.breeds_by_Characteristics
-    self.breeds_by_group = Scraper.breeds_by_AKC
+    self.breeds_by_group = Scraper.dog_breed_groups
     puts 'no finish yet'
   end
 
@@ -66,7 +66,7 @@ class CLI
       self.doogle
     else
       list = self.all_breeds_list
-      input = self.prompt.enum_select("Select a breed", list)
+      input = self.prompt.enum_select("Select a breed", list, per_page: 10)
       puts input
     end    
   end
@@ -77,8 +77,11 @@ class CLI
   end
 
   def breeds_by_AKC
-    puts self.breeds_by_group
+    choices = self.breeds_by_group
+    input = self.prompt.enum_select("Select a breed", choices, per_page: 10)
+    breeds = Scraper.breeds_by_group(input)
     puts "TODO: format in better way"
+    
   end
 
   def doogle
@@ -88,7 +91,7 @@ class CLI
     result = self.all_breeds_list.select{|breed| breed.match(/^#{input}/i)}
     
     if result.size > 1
-      result = [self.prompt.enum_select("Select a breed", result)]
+      result = [self.prompt.enum_select("Select a breed", result, per_page: 10)]
     end
     sure = self.prompt.yes?("Can you confirm '#{result[0]}' is your desire breed?")
     if sure

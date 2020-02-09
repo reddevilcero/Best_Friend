@@ -11,10 +11,23 @@ class Scraper
     charac_list = doc.css('h3.callout-heading').collect{|charac| charac.text}
   end
 
-  def self.breeds_by_AKC
+  def self.dog_breed_groups
     doc= Nokogiri::HTML(open('https://dogtime.com/dog-breeds/groups/'))
     akc_list = doc.css('h3.callout-heading').collect{|group| group.text}
-    # binding.pry
+    
+  end
+
+  def self.breeds_by_group(group)
+    if group == 'Hound Dogs' || group == 'Terrier Dogs' || group == 'Hybrid Dogs' || group == 'Mixed Breed Dogs'
+      group = group.sub(/ dogs/i, 's')
+    end
+    group = group.split(' ').join('-')
+    url = "https://dogtime.com/dog-breeds/groups/#{group}"
+    doc = Nokogiri::HTML(open(url))
+    breeds_list = doc.css('a.list-item-title').collect{|breed| breed.text}
+    binding.pry
+    
+    
   end
 
 
