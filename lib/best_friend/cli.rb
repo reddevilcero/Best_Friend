@@ -60,30 +60,24 @@ class CLI
   end
 
   def all_breeds
+    # prompt = TTY::Prompt.new
     input = self.prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
     if input
       self.doogle
     else
       list = self.all_breeds_list
-      input = self.prompt.enum_select("Select a breed", list, per_page: 10)
-      puts input
+      url = self.prompt.enum_select("Select a breed", list, per_page: 10)
+      Scraper.breed_info(url)
     end    
   end
 
-  def group_by(hash)
+  def group_by(hash) #use_doogle=true
     choices = hash.keys
     input = self.prompt.enum_select("Select a Group", choices, per_page: 10)
-    breeds = Scraper.breeds_by_url(hash[input]) #send the link to breeds_by
-    if breeds.size > 50
-      input = self.prompt.yes?("The list of breed is #{breeds.size} do you no prefer use Doogle.")
-      if input
-        self.doogle(breeds)
-      end
-    else
-      selected_breed = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
-      puts selected_breed #return the breed as string
-      puts "TODO: format in better way"
-    end
+    breeds = Scraper.breeds_by_url(hash[input]) #send the link to breeds_by an return a hash
+    selected_breed_url = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
+    Scraper.breed_info(selected_breed_url)
+    puts "TODO: format in better way"
   
   end
 
@@ -95,22 +89,21 @@ class CLI
     self.group_by(self.breeds_by_group)
   end
 
-  def doogle(array = self.all_breeds_list)
+  def doogle
     puts 'Welcome to DOOGLE your breed finder.'
     input = self.prompt.ask("Type one or more characters of the desire breed.")
-    result = array.select{|breed| breed.match(/^#{input}/i)}
+    result = self.all_breeds_list.select{|breed| breed.match(/^#{input}/i)}
     
-    if result.size > 1
-      result = [self.prompt.enum_select("Select a breed", result, per_page: 10)]
-    end
-    sure = self.prompt.yes?("Can you confirm '#{result[0]}' is your desire breed?")
-    if sure
-      puts 'TODO implemente the breed sraper.'
-      result[0]
-    else
-      self.doogle
-    end
-    
+    # if result.size > 1
+    #   result = self.prompt.enum_select("Select a breed", result, per_page: 10)
+    # end
+    # dog_name = all_breeds.key(result)
+    # sure = self.prompt.yes?("Can you confirm '#{dog}' is your desire breed?")
+    # if sure
+    #   puts 'TODO implemente the breed sraper.'
+    #   Scraper.breed_info(result)
+    # end
+
   end
 
   def exit

@@ -13,12 +13,17 @@ class Scraper
   end
 
     def self.breeds_by_url(url)
-    doc = Nokogiri::HTML(open(url))
-    breeds_list = doc.css('.list-item-title').collect{|breed| breed.text}    
-  end
+      doc = Nokogiri::HTML(open(url))
+      hash={}
+      breeds_list = doc.css('.list-item-title').collect do |breed| 
+        hash[breed.text.to_sym] = breed.attribute('href').value
+      end
+      hash
+    end
 
   def self.all_breeds
-    self.group_by('https://dogtime.com/dog-breeds')
+    self.breeds_by_url('https://dogtime.com/dog-breeds/profiles/')
+   
   end
 
   def self.group_by_Characteristics
@@ -29,6 +34,10 @@ class Scraper
     self.group_by('https://dogtime.com/dog-breeds/groups/')
   end
 
+  def self.breed_info(url)
+    doc = Nokogiri::HTML(open(url))
+    binding.pry
+  end
 
 
 
