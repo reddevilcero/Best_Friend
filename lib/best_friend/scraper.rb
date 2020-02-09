@@ -11,5 +11,11 @@ class Scraper
     charac_list = doc.css('h3.callout-heading').collect{|charac| charac.text}
   end
 
+  def self.breeds_by_AKC
+    doc= Nokogiri::HTML(open('https://dogtime.com/dog-breeds/groups/'))
+    akc_list = doc.css('h3.callout-heading').collect{|group| group.text}
+    # binding.pry
+  end
+
 
 end

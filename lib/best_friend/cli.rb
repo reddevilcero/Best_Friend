@@ -2,19 +2,23 @@ require_relative './scraper'
 
 class CLI
 
-   attr_accessor :all_breeds_list, :breeds_by_Characteristics
+   attr_accessor :all_breeds_list, :breeds_by_Characteristics, :breeds_by_group
 
   def initialize
-    @prompt = TTY::Prompt.new
     Async do
       self.scrap_data
     end.wait
     self.start
   end
 
+  def prompt
+    TTY::Prompt.new
+  end
+
   def scrap_data
     self.all_breeds_list = Scraper.all_breeds
     self.breeds_by_Characteristics = Scraper.breeds_by_Characteristics
+    self.breeds_by_group = Scraper.breeds_by_AKC
     puts 'no finish yet'
   end
 
@@ -33,8 +37,7 @@ class CLI
   end
 
   def menu
-    # prompt = TTY::Prompt.new
-    input = @prompt.select("select from one of our list or try Doogle search") do |menu|
+    input = self.prompt.select("select from one of our list or try Doogle search") do |menu|
       menu.choice name: 'All Breeds', value: 1
       menu.choice name: 'Breeds Group by Characteristics', value: 2
       menu.choice name: 'Breeds Group by Using AKC Categories', value: 3
@@ -58,35 +61,36 @@ class CLI
 
   def all_breeds
     # prompt = TTY::Prompt.new
-    input = @prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
+    input = self.prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
     if input
       self.doogle
     else
       list = self.all_breeds_list
-      input = @prompt.enum_select("Select a breed", list)
+      input = self.prompt.enum_select("Select a breed", list)
       puts input
     end    
   end
 
   def breeds_by_characteristics
-     puts self.breeds_by_Characteristics
+    puts self.breeds_by_Characteristics
     puts "TODO: format in better way"
   end
 
   def breeds_by_AKC
-    puts "TODO: AKC breeds list here"
+    puts self.breeds_by_group
+    puts "TODO: format in better way"
   end
 
   def doogle
     # prompt = TTY::Prompt.new
     puts 'Welcome to DOOGLE your breed finder.'
-    input = @prompt.ask("Type one or more characters of the desire breed.")
+    input = self.prompt.ask("Type one or more characters of the desire breed.")
     result = self.all_breeds_list.select{|breed| breed.match(/^#{input}/i)}
     
     if result.size > 1
-      result = [@prompt.enum_select("Select a breed", result)]
+      result = [self.prompt.enum_select("Select a breed", result)]
     end
-    sure = @prompt.yes?("Can you confirm '#{result[0]}' is your desire breed?")
+    sure = self.prompt.yes?("Can you confirm '#{result[0]}' is your desire breed?")
     if sure
       puts 'TODO implemente the breed sraper.'
       result[0]
