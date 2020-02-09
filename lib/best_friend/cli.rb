@@ -60,7 +60,6 @@ class CLI
   end
 
   def all_breeds
-    # prompt = TTY::Prompt.new
     input = self.prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
     if input
       self.doogle
@@ -94,16 +93,17 @@ class CLI
     input = self.prompt.ask("Type one or more characters of the desire breed.")
     result = self.all_breeds_list.select{|breed| breed.match(/^#{input}/i)}
     
-    # if result.size > 1
-    #   result = self.prompt.enum_select("Select a breed", result, per_page: 10)
-    # end
-    # dog_name = all_breeds.key(result)
-    # sure = self.prompt.yes?("Can you confirm '#{dog}' is your desire breed?")
-    # if sure
-    #   puts 'TODO implemente the breed sraper.'
-    #   Scraper.breed_info(result)
-    # end
-
+    if result.size > 1
+      result = self.prompt.enum_select("Select a breed", result, per_page: 10)
+    end
+    dog_name = all_breeds_list.key(result)
+    sure = self.prompt.yes?("Can you confirm '#{dog_name}' is your desire breed?")
+    if sure
+      Scraper.breed_info(result)
+    else
+      self.doogle
+    end
+    
   end
 
   def exit
