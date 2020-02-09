@@ -2,11 +2,22 @@ require_relative './scraper'
 
 class CLI
 
-   attr_accessor :all_breeds_list
+   attr_accessor :all_breeds_list, :breeds_by_Characteristics
 
    def initialize
-    self.all_breeds_list = Scraper.all_breeds
+    Async do
+      self.scrap_data
+    end.wait
+    puts 'scrapping'
+    self.start
    end
+
+   def scrap_data
+      self.all_breeds_list = Scraper.all_breeds
+      self.breeds_by_Characteristics = Scraper.breeds_by_Characteristics
+      puts 'no finish yet'
+   end
+
 
   def start
     puts self.welcome
@@ -61,7 +72,8 @@ class CLI
   end
 
   def breeds_by_characteristics
-    puts "TODO: characteristics breeds list here"
+     puts self.breeds_by_Characteristics
+    puts "TODO: format in better way"
   end
 
   def breeds_by_AKC
