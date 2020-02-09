@@ -4,19 +4,19 @@ class CLI
 
    attr_accessor :all_breeds_list, :breeds_by_Characteristics
 
-   def initialize
+  def initialize
+    @prompt = TTY::Prompt.new
     Async do
       self.scrap_data
     end.wait
-    puts 'scrapping'
     self.start
-   end
+  end
 
-   def scrap_data
-      self.all_breeds_list = Scraper.all_breeds
-      self.breeds_by_Characteristics = Scraper.breeds_by_Characteristics
-      puts 'no finish yet'
-   end
+  def scrap_data
+    self.all_breeds_list = Scraper.all_breeds
+    self.breeds_by_Characteristics = Scraper.breeds_by_Characteristics
+    puts 'no finish yet'
+  end
 
 
   def start
@@ -33,8 +33,8 @@ class CLI
   end
 
   def menu
-    prompt = TTY::Prompt.new
-    input = prompt.select("select from one of our list or try Doogle search") do |menu|
+    # prompt = TTY::Prompt.new
+    input = @prompt.select("select from one of our list or try Doogle search") do |menu|
       menu.choice name: 'All Breeds', value: 1
       menu.choice name: 'Breeds Group by Characteristics', value: 2
       menu.choice name: 'Breeds Group by Using AKC Categories', value: 3
@@ -57,18 +57,15 @@ class CLI
   end
 
   def all_breeds
-    prompt = TTY::Prompt.new
-    input =prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
+    # prompt = TTY::Prompt.new
+    input = @prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
     if input
       self.doogle
     else
-      self.all_breeds_list.each_with_index do |breed, index|
-        puts "#{index + 1}. #{breed}"
-        #find if prompt can do this better?
-      end
-      puts 'Todo ask for dog name or number? not sure'
-    end
-    
+      list = self.all_breeds_list
+      input = @prompt.enum_select("Select a breed", list)
+      puts input
+    end    
   end
 
   def breeds_by_characteristics
@@ -80,8 +77,23 @@ class CLI
     puts "TODO: AKC breeds list here"
   end
 
-  def doogle 
-    puts 'TODO implement the search method'
+  def doogle
+    # prompt = TTY::Prompt.new
+    puts 'Welcome to DOOGLE your breed finder.'
+    input = @prompt.ask("Type one or more characters of the desire breed.")
+    result = self.all_breeds_list.select{|breed| breed.match(/^#{input}/i)}
+    
+    if result.size > 1
+      result = [@prompt.enum_select("Select a breed", result)]
+    end
+    sure = @prompt.yes?("Can you confirm '#{result[0]}' is your desire breed?")
+    if sure
+      puts 'TODO implemente the breed sraper.'
+      result[0]
+    else
+      self.doogle
+    end
+    
   end
 
   def exit

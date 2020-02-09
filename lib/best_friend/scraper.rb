@@ -9,7 +9,6 @@ class Scraper
   def self.breeds_by_Characteristics
     doc= Nokogiri::HTML(open('https://dogtime.com/dog-breeds/characteristics'))
     charac_list = doc.css('h3.callout-heading').collect{|charac| charac.text}
-
   end
 
 
