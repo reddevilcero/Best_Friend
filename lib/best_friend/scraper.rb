@@ -24,10 +24,7 @@ class Scraper
     group = group.split(' ').join('-')
     url = "https://dogtime.com/dog-breeds/groups/#{group}"
     doc = Nokogiri::HTML(open(url))
-    breeds_list = doc.css('a.list-item-title').collect{|breed| breed.text}
-    binding.pry
-    
-    
+    breeds_list = doc.css('a.list-item-title').collect{|breed| breed.text}    
   end
 
 

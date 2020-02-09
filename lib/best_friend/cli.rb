@@ -78,14 +78,15 @@ class CLI
 
   def breeds_by_AKC
     choices = self.breeds_by_group
-    input = self.prompt.enum_select("Select a breed", choices, per_page: 10)
+    input = self.prompt.enum_select("Select a Group", choices, per_page: 10)
     breeds = Scraper.breeds_by_group(input)
+    selected_breed = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
+    puts selected_breed #return the breed as string
     puts "TODO: format in better way"
     
   end
 
   def doogle
-    # prompt = TTY::Prompt.new
     puts 'Welcome to DOOGLE your breed finder.'
     input = self.prompt.ask("Type one or more characters of the desire breed.")
     result = self.all_breeds_list.select{|breed| breed.match(/^#{input}/i)}
