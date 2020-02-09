@@ -2,7 +2,7 @@ require_relative './scraper'
 
 class CLI
 
-   attr_accessor :all_breeds_list, :breeds_by_Characteristics, :breeds_by_group
+   attr_accessor :all_breeds_list, :group_by_Characteristics, :breeds_by_group
 
   def initialize
     Async do
@@ -17,8 +17,8 @@ class CLI
 
   def scrap_data
     self.all_breeds_list = Scraper.all_breeds
-    self.breeds_by_Characteristics = Scraper.breeds_by_Characteristics
-    self.breeds_by_group = Scraper.dog_breed_groups
+    self.group_by_Characteristics = Scraper.group_by_Characteristics
+    self.breeds_by_group = Scraper.group_by_AKC
     puts 'no finish yet'
   end
 
@@ -49,7 +49,7 @@ class CLI
       when 1
         self.all_breeds
       when 2
-        self.breeds_by_characteristics
+        self.group_by_characteristics
       when 3
         self.breeds_by_AKC
       when 4
@@ -60,7 +60,6 @@ class CLI
   end
 
   def all_breeds
-    # prompt = TTY::Prompt.new
     input = self.prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
     if input
       self.doogle
@@ -71,25 +70,35 @@ class CLI
     end    
   end
 
-  def breeds_by_characteristics
-    puts self.breeds_by_Characteristics
-    puts "TODO: format in better way"
+  def group_by(hash)
+    choices = hash.keys
+    input = self.prompt.enum_select("Select a Group", choices, per_page: 10)
+    breeds = Scraper.breeds_by_url(hash[input]) #send the link to breeds_by
+    if breeds.size > 50
+      input = self.prompt.yes?("The list of breed is #{breeds.size} do you no prefer use Doogle.")
+      if input
+        self.doogle(breeds)
+      end
+    else
+      selected_breed = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
+      puts selected_breed #return the breed as string
+      puts "TODO: format in better way"
+    end
+  
+  end
+
+  def group_by_characteristics
+    self.group_by(self.group_by_Characteristics)
   end
 
   def breeds_by_AKC
-    choices = self.breeds_by_group
-    input = self.prompt.enum_select("Select a Group", choices, per_page: 10)
-    breeds = Scraper.breeds_by_group(input)
-    selected_breed = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
-    puts selected_breed #return the breed as string
-    puts "TODO: format in better way"
-    
+    self.group_by(self.breeds_by_group)
   end
 
-  def doogle
+  def doogle(array = self.all_breeds_list)
     puts 'Welcome to DOOGLE your breed finder.'
     input = self.prompt.ask("Type one or more characters of the desire breed.")
-    result = self.all_breeds_list.select{|breed| breed.match(/^#{input}/i)}
+    result = array.select{|breed| breed.match(/^#{input}/i)}
     
     if result.size > 1
       result = [self.prompt.enum_select("Select a breed", result, per_page: 10)]

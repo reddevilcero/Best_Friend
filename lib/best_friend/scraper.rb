@@ -1,31 +1,35 @@
 # require 'open-uri'
 class Scraper
 
-  def self.all_breeds
-    doc = Nokogiri::HTML(open('https://dogtime.com/dog-breeds'))
-    breeds_list = doc.css('ul.search-results-list li').collect{|breed| breed.css('a').text}
-  end
-
-  def self.breeds_by_Characteristics
-    doc= Nokogiri::HTML(open('https://dogtime.com/dog-breeds/characteristics'))
-    charac_list = doc.css('h3.callout-heading').collect{|charac| charac.text}
-  end
-
-  def self.dog_breed_groups
-    doc= Nokogiri::HTML(open('https://dogtime.com/dog-breeds/groups/'))
-    akc_list = doc.css('h3.callout-heading').collect{|group| group.text}
-    
-  end
-
-  def self.breeds_by_group(group)
-    if group == 'Hound Dogs' || group == 'Terrier Dogs' || group == 'Hybrid Dogs' || group == 'Mixed Breed Dogs'
-      group = group.sub(/ dogs/i, 's')
+  def self.group_by(url)
+     doc= Nokogiri::HTML(open(url))
+    hash = {}
+    doc.css('li.item.paws').collect do |div| 
+      key = div.css('h3').text
+      value = div.css('a').attribute('href').value
+      hash[key.to_sym] = value
     end
-    group = group.split(' ').join('-')
-    url = "https://dogtime.com/dog-breeds/groups/#{group}"
-    doc = Nokogiri::HTML(open(url))
-    breeds_list = doc.css('a.list-item-title').collect{|breed| breed.text}    
+    hash
   end
+
+    def self.breeds_by_url(url)
+    doc = Nokogiri::HTML(open(url))
+    breeds_list = doc.css('.list-item-title').collect{|breed| breed.text}    
+  end
+
+  def self.all_breeds
+    self.group_by('https://dogtime.com/dog-breeds')
+  end
+
+  def self.group_by_Characteristics
+   self.group_by('https://dogtime.com/dog-breeds/characteristics')
+  end
+
+  def self.group_by_AKC
+    self.group_by('https://dogtime.com/dog-breeds/groups/')
+  end
+
+
 
 
 end
