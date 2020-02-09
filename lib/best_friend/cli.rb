@@ -53,7 +53,7 @@ class CLI
       when 3
         self.breeds_by_AKC
       when 4
-        self.doogle
+        self.doogle(self.all_breeds_list)
       when 5 
         self.exit
     end
@@ -88,21 +88,39 @@ class CLI
     self.group_by(self.breeds_by_group)
   end
 
-  def doogle
+  def doogle(hash)
     puts 'Welcome to DOOGLE your breed finder.'
-    input = self.prompt.ask("Type one or more characters of the desire breed.")
-    result = self.all_breeds_list.select{|breed| breed.match(/^#{input}/i)}
+    input = self.prompt.ask("Type one or more characters of the desire breed.") do |q|
+      q.validate /[a-zA-Z]/
+    end
+    result = hash.select{|breed| breed.match(/^#{input}/i)}
     
-    if result.size > 1
-      result = self.prompt.enum_select("Select a breed", result, per_page: 10)
-    end
-    dog_name = all_breeds_list.key(result)
-    sure = self.prompt.yes?("Can you confirm '#{dog_name}' is your desire breed?")
-    if sure
-      Scraper.breed_info(result)
+    if !result.empty?
+      if result.size > 1
+        result = self.prompt.enum_select("Select a breed", result, per_page: 10)
+        dog_name = all_breeds_list.key(result)
+        url = all_breeds_list[dog_name]
+      else
+        dog_name = result.keys[0]
+        url = result.values[0]
+      end
+      
+      sure = self.prompt.yes?("Can you confirm '#{dog_name}' is your desire breed?")
+      if sure
+        Scraper.breed_info(url)
+      else
+        self.doogle(hash)
+      end
     else
-      self.doogle
+       again =self.prompt.yes?("Sorry but '#{input}'' does not match any know breed name. do you want to try again?")
+      if again
+        self.doogle(hash)
+      else
+          self.menu
+      end
+        
     end
+ 
     
   end
 
