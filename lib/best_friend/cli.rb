@@ -62,7 +62,7 @@ class CLI
   def all_breeds
     input = self.prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
     if input
-      self.doogle
+      self.doogle(self.all_breeds_list)
     else
       list = self.all_breeds_list
       url = self.prompt.enum_select("Select a breed", list, per_page: 10)
@@ -73,10 +73,20 @@ class CLI
   def group_by(hash) #use_doogle=true
     choices = hash.keys
     input = self.prompt.enum_select("Select a Group", choices, per_page: 10)
-    breeds = Scraper.breeds_by_url(hash[input]) #send the link to breeds_by an return a hash
-    selected_breed_url = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
-    Scraper.breed_info(selected_breed_url)
-    puts "TODO: format in better way"
+    breeds = Scraper.breeds_by_url(hash[input]) #send the link to breeds_by and return a hash
+    if breeds.size > 50
+      input = self.prompt.yes?("The list of breeds is #{breeds.size} do you rather use Doogle?")
+      if input
+        self.doogle(breeds)
+      else
+        puts 'TODO not sure what yet.'
+      end
+    else
+      selected_breed_url = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
+      Scraper.breed_info(selected_breed_url)
+      puts "TODO: format in better way"
+    end
+
   
   end
 
@@ -116,6 +126,7 @@ class CLI
       if again
         self.doogle(hash)
       else
+
           self.menu
       end
         
