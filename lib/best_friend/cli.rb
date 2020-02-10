@@ -1,4 +1,4 @@
-require_relative './scraper'
+# require_relative './scraper'
 
 class CLI
 
@@ -67,7 +67,8 @@ class CLI
     else
       list = self.all_breeds_list
       url = self.prompt.enum_select("Select a breed", list, per_page: 10)
-      Scraper.breed_info(url)
+      Scraper.create_breed(url)
+      binding.pry
     end    
   end
 
@@ -85,10 +86,10 @@ class CLI
       end
     else
       selected_breed_url = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
-      Scraper.breed_info(selected_breed_url)
+      Scraper.create_breed(selected_breed_url)
       puts "TODO: format in better way"
     end
-    Scraper.breed_info(selected_breed_url)
+    Scraper.create_breed(selected_breed_url)
   
   end
 
@@ -120,7 +121,7 @@ class CLI
       
       sure = self.prompt.yes?("Can you confirm '#{dog_name}' is your desire breed?")
       if sure
-        Scraper.breed_info(url)
+        Scraper.create_breed(url)
       else
         self.doogle(hash)
       end
