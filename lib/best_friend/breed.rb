@@ -13,11 +13,17 @@ class Breed
 
   def self.create_by_hash(hash)
     Breed.new.tap do |breed| 
-      hash.each{|key, value| 
-        breed.send("#{key}=", value)}
+      hash.each do |key, value| 
+        breed.send("#{key}=", value)
+        breed.add_stats(hash[:stats])
+      end
       breed.save
     end
-   binding.pry
+ 
+  end
+
+  def add_stats(hash)
+    self.stats =Stats.new(hash)
   end
  
  

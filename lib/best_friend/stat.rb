@@ -1,4 +1,4 @@
-class Stat
+class Stats
   
   def initialize(hash)
     self.dynamic_attr(hash)
