@@ -40,12 +40,14 @@ class Scraper
       name:doc.css('h1').text,
       bio: doc.css('p').first.text,
       characteristics:[],
-      stats: {}
+      stats: []
     }
     # Collecting Vital Stats
     doc.css('div.vital-stat-box').collect do |stat|
       stats = stat.text.split(':')
-      hash[:stats][stats[0].to_sym] = stats[1]
+      norm = stats[0].downcase.split(' ').join('_')
+      # hash[:stats][stats[0].to_sym] = stats[1]
+      hash[:stats] << Stat.new({norm.to_sym => stats[1]})
     end
     # Collecting Main Characteristic and Stars Ratings
     doc.css('div.breed-characteristics-ratings-wrapper').collect do |info|

@@ -9,3 +9,4 @@ require_relative "best_friend/version"
 require_relative './best_friend/scraper'
 require_relative './best_friend/cli'
 require_relative './best_friend/breed'
+require_relative './best_friend/stat'

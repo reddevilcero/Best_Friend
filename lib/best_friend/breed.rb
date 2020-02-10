@@ -12,7 +12,11 @@ class Breed
   end
 
   def self.create_by_hash(hash)
-    Breed.new.tap { |breed| hash.each{|key, value| breed.send("#{key}=", value)}; breed.save}
+    Breed.new.tap do |breed| 
+      hash.each{|key, value| 
+        breed.send("#{key}=", value)}
+      breed.save
+    end
    binding.pry
   end
  
