@@ -157,31 +157,14 @@ class CLI
     ############### Breed Name ###############
     name = self.display_name(object.name)
     ############### Table for Bio #############
-    bio_table = Terminal::Table.new :title => 'BIO'
-    object.bio = self.fit_in_table(object.bio)
-    bio_table << [object.bio]
-    bio_table.style = {:width => 105}
-
+    bio_table = self.display_bio(object.bio)
     ############### Table for characteristic #####################
-    c_table = Terminal::Table.new do |t|
-      object.characteristics.each do|c| 
-        t.add_row [c.name, self.pastel.bright_yellow('*'* c.stars)]
-      end
-    end
-    c_table.style = {:all_separators => true}
-    c_table.title = 'Main Characteristics:'
-    
+    c_table = self.display_charac(object.characteristics)
     ############### Table for Vital Stats ##################
-    row = [[object.stats.dog_breed_group, object.stats.height, object.stats.weight , object.stats.life_span]]
-    headings = ['Dog Breed Group:', 'Height:', 'Weight:', 'Life Span']
-    vital_table = Terminal::Table.new :headings => headings, :rows => row
-    vital_table.style = {:alignment => :center}
-    vital_table.title = 'Vital Stats'
-  
+    vital_table = self.display_vital(object)
     ############### Final output #####################
     <<~Info
-    #{name}
-        
+    #{name} 
     #{bio_table}
     #{c_table}
     ==========================================================================================================
@@ -190,9 +173,46 @@ class CLI
   end
 
   def display_name(str)
-    a = Artii::Base.new :font => 'slant'
-    name = a.asciify(str)
+    name = self.create_art(str, 'slant')
     name = self.pastel.decorate(name, :bright_blue)
+  end
+  def create_art(str, fonttype)
+    artii = Artii::Base.new :font => fonttype
+    artii.asciify(str)
+  end
+
+  def display_bio(str)
+    bio = self.create_art('BIO', 'smslant')
+    bio = self.pastel.decorate(bio, :cyan)
+    bio_table = Terminal::Table.new :title => bio
+    str = self.fit_in_table(str)
+    bio_table << [str]
+    bio_table.style = {:width => 105}
+    bio_table
+  end
+
+  def display_charac(array)
+    c_table = Terminal::Table.new do |t|
+      array.each do|c| 
+        t.add_row [c.name, self.pastel.bright_yellow('*'* c.stars + self.pastel.white('*'*(5-c.stars)))]
+      end
+    end
+    c_table.style = {:all_separators => true,:alignment => :center}
+    title =  self.create_art('Main characteristics', 'smslant')
+    title = self.pastel.cyan(title)
+    c_table.title = title
+    c_table
+  end
+
+  def display_vital(object)
+    row = [[object.stats.dog_breed_group, object.stats.height, object.stats.weight , object.stats.life_span]]
+    headings = ['Dog Breed Group:', 'Height:', 'Weight:', 'Life Span']
+    vital_table = Terminal::Table.new :headings => headings, :rows => row
+    vital_table.style = {:alignment => :center}
+    title = self.create_art('Vital Stats', 'smslant')
+    title = self.pastel.cyan(title)
+    vital_table.title = title
+    vital_table
   end
 
   def fit_in_table(str)
@@ -210,8 +230,7 @@ class CLI
   end
 
   def exit
-    a = Artii::Base.new :font => 'slant'
-    goodbye = a.asciify('Thanks for use Best Friend')
+    goodbye = self.create_art('Thanks for use Best Friend', 'slant')
     goodbye = self.pastel.decorate(goodbye, :cyan, :bold)
     puts goodbye
     sleep(3)
