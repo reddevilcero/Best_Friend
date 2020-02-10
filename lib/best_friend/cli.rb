@@ -1,8 +1,3 @@
-# require_relative './scraper'
-require 'terminal-table'
-require 'pastel'
-require 'artii'
-
 class CLI
 
    attr_accessor :all_breeds_list, :group_by_Characteristics, :breeds_by_group
@@ -32,16 +27,27 @@ class CLI
 
 
   def start
-    self.welcome
+    puts self.welcome
     self.menu
   end
 
   def welcome
     system 'clear'
-    puts <<~Logo
-              TODO: here it will be place a fancy logo
-              or something close.
-          Logo
+    a = Artii::Base.new :font => 'roman'
+    logo = a.asciify('Best Friend')
+    logo = self.pastel.green(logo)
+    a = Artii::Base.new :font => 'digital'
+   
+    heading = a.asciify('CLI Project for Flatiron School.')
+    heading = self.pastel.decorate(heading, :cyan, :bold)
+    
+    <<~Logo
+      #{logo}
+      #{heading}
+
+    Logo
+   
+
   end
 
   def menu
@@ -76,13 +82,14 @@ class CLI
       url = self.prompt.enum_select("Select a breed", list, per_page: 10)
       breed_object= Scraper.create_breed(url)
       puts self.display_info(breed_object)
-    end    
+    end   
+    self.continue
   end
 
   def group_by(hash) #use_doogle=true
     choices = hash.keys
     input = self.prompt.enum_select("Select a Group", choices, per_page: 10)
-    self.welcome
+    puts self.welcome
     breeds = Scraper.breeds_by_url(hash[input]) #send the link to breeds_by and return a hash
     if breeds.size > 50
       input = self.prompt.yes?("The list of breeds is #{breeds.size} do you rather use Doogle?")
@@ -98,7 +105,7 @@ class CLI
     end
     breed_object = Scraper.create_breed(selected_breed_url)
     puts self.display_info(breed_object)
-  
+    self.continue
   end
 
   def group_by_characteristics
@@ -190,10 +197,23 @@ class CLI
     new_str.join("\n")
   end
 
-  def exit
-    puts "bye Felicia"
+  def continue
+    more = self.prompt.yes?('Do You want to find other breed?')
+    if more
+      self.menu
+    else
+      self.exit
+    end
   end
 
+  def exit
+    a = Artii::Base.new :font => 'slant'
+    goodbye = a.asciify('Thanks for use Best Friend')
+    goodbye = self.pastel.decorate(goodbye, :cyan, :bold)
+    puts goodbye
+    sleep(3)
+    system 'clear'
+  end
 
   
 end
