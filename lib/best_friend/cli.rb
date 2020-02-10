@@ -1,4 +1,6 @@
 # require_relative './scraper'
+require 'terminal-table'
+require 'pastel'
 
 class CLI
 
@@ -9,6 +11,10 @@ class CLI
       self.scrap_data
     end.wait
     self.start
+  end
+
+  def pastel
+    Pastel.new
   end
 
   def prompt
@@ -89,7 +95,8 @@ class CLI
       Scraper.create_breed(selected_breed_url)
       puts "TODO: format in better way"
     end
-    Scraper.create_breed(selected_breed_url)
+    breed_object = Scraper.create_breed(selected_breed_url)
+    puts self.display_info(breed_object)
   
   end
 
@@ -121,7 +128,8 @@ class CLI
       
       sure = self.prompt.yes?("Can you confirm '#{dog_name}' is your desire breed?")
       if sure
-        Scraper.create_breed(url)
+        breed_object =Scraper.create_breed(url)
+        puts self.display_info(breed_object)
       else
         self.doogle(hash)
       end
@@ -136,18 +144,18 @@ class CLI
   end
 
   def display_info(object)
-    binding.pry
-    
-
+    system 'clear'
+    c_table = Terminal::Table.new do |t|
+      object.characteristics.each do|c| 
+        t.add_row [c.name, self.pastel.yellow('*'* c.stars)]
+      end
+    end
     <<~Info
-                              #{object.name.upcase}
+     #{object.name.upcase}
         
-      #{object.bio}
-      Main Characteristics:
-      - #{object.characteristics[0].name}         -  Stars #{'*' * (object.characteristics[0].stars)}
-      - #{object.characteristics[1].name}         -  Stars #{'*' * (object.characteristics[1].stars)}
-      - #{object.characteristics[2].name}         -  Stars #{'*' * (object.characteristics[2].stars)}
-      - #{object.characteristics[3].name}         -  Stars #{'*' * (object.characteristics[3].stars)}
+    #{object.bio}
+        Main Characteristics:
+    #{c_table}
     ==========================================================================================================
 
           Dog Breed Group:        Height:         Weight:             Life Span
