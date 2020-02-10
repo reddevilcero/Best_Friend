@@ -17,23 +17,24 @@ class CLI
 
   def scrap_data
     self.all_breeds_list = Scraper.all_breeds
-    self.group_by_Characteristics = Scraper.group_by_Characteristics
-    self.breeds_by_group = Scraper.group_by_AKC
+    # TODO do this in Async way.
+    # self.group_by_Characteristics = Scraper.group_by_Characteristics
+    # self.breeds_by_group = Scraper.group_by_AKC
     puts 'no finish yet'
   end
 
 
   def start
-    puts self.welcome
+    self.welcome
     self.menu
   end
 
   def welcome
-  <<-Logo
-      TODO: here it will be place a fancy logo
-      or something close.
-
-    Logo
+    system 'clear'
+    puts <<~Logo
+              TODO: here it will be place a fancy logo
+              or something close.
+          Logo
   end
 
   def menu
@@ -73,32 +74,34 @@ class CLI
   def group_by(hash) #use_doogle=true
     choices = hash.keys
     input = self.prompt.enum_select("Select a Group", choices, per_page: 10)
+    self.welcome
     breeds = Scraper.breeds_by_url(hash[input]) #send the link to breeds_by and return a hash
     if breeds.size > 50
       input = self.prompt.yes?("The list of breeds is #{breeds.size} do you rather use Doogle?")
       if input
         self.doogle(breeds)
       else
-        puts 'TODO not sure what yet.'
+        selected_breed_url = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
       end
     else
       selected_breed_url = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
       Scraper.breed_info(selected_breed_url)
       puts "TODO: format in better way"
     end
-
+    Scraper.breed_info(selected_breed_url)
   
   end
 
   def group_by_characteristics
-    self.group_by(self.group_by_Characteristics)
+    self.group_by(Scraper.group_by_Characteristics)
   end
 
   def breeds_by_AKC
-    self.group_by(self.breeds_by_group)
+    self.group_by(Scraper.group_by_AKC)
   end
 
   def doogle(hash)
+    puts self.welcome
     puts 'Welcome to DOOGLE your breed finder.'
     input = self.prompt.ask("Type one or more characters of the desire breed.") do |q|
       q.validate /[a-zA-Z]/

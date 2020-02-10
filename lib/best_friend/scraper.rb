@@ -35,7 +35,36 @@ class Scraper
 
   def self.breed_info(url)
     doc = Nokogiri::HTML(open(url))
+    hash = {
+      name:doc.css('h1').text,
+      bio: doc.css('p').first.text,
+      characteristics:[],
+      stats: {}
+    }
+    # Collecting Vital Stats
+    doc.css('div.vital-stat-box').collect do |stat|
+      stats = stat.text.split(':')
+      hash[:stats][stats[0].to_sym] = stats[1]
+    end
+    # Collecting Main Characteristic and Stars Ratings
+    doc.css('div.breed-characteristics-ratings-wrapper').collect do |info|
+      outer_hash = {}
+      key = info.css('div.parent-characteristic').text.strip.to_sym
+      value = info.css('div.parent-characteristic').css('div.star').attribute('class').value[-1].to_i
+      outer_hash[key] = {
+        :stars => value,
+        :details => {}
+      }
+      # Collecting Inner Characteristics and Stars Ratings
+      info.css('div.child-characteristic').collect do |details|
+         inner_key = details.css('.characteristic-title').text.to_sym
+         inner_value = details.css('div.star').attribute('class').value[-1].to_i
+         outer_hash[key][:details][inner_key] = inner_value
+      end
+      hash[:characteristics] << outer_hash
+    end
     binding.pry
+    hash
   end
 
 
