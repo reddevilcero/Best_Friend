@@ -1,4 +1,3 @@
-# require 'open-uri'
 class Scraper
 
   def self.group_by(url)

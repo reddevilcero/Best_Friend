@@ -126,13 +126,9 @@ class CLI
       if again
         self.doogle(hash)
       else
-
           self.menu
       end
-        
     end
- 
-    
   end
 
   def exit
