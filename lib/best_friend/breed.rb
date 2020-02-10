@@ -15,15 +15,23 @@ class Breed
     Breed.new.tap do |breed| 
       hash.each do |key, value| 
         breed.send("#{key}=", value)
-        breed.add_stats(hash[:stats])
       end
+      breed.add_stats(breed.stats)
+      breed.add_charac(breed.characteristics)
       breed.save
+      binding.pry
     end
  
   end
 
   def add_stats(hash)
     self.stats =Stats.new(hash)
+  end
+  def add_charac(array)
+    self.characteristics = []
+    array.each do|charac|
+      Characteristic.new(charac)
+    end
   end
  
  

@@ -45,13 +45,12 @@ class Scraper
     # Collecting Vital Stats
     doc.css('div.vital-stat-box').collect do |stat|
       stats = stat.text.split(':')
-      norm =stats[0].downcase.split(' ').join('_')
-      hash[:stats][norm] = stats[1]
+      hash[:stats][stats[0]] = stats[1]
     end
     # Collecting Main Characteristic and Stars Ratings
     doc.css('div.breed-characteristics-ratings-wrapper').collect do |info|
       outer_hash = {}
-      key = info.css('div.parent-characteristic').text.strip.to_sym
+      key = info.css('div.parent-characteristic').text.strip
       value = info.css('div.parent-characteristic').css('div.star').attribute('class').value[-1].to_i
       outer_hash[key] = {
         :stars => value,
@@ -59,7 +58,7 @@ class Scraper
       }
       # Collecting Inner Characteristics and Stars Ratings
       info.css('div.child-characteristic').collect do |details|
-         inner_key = details.css('.characteristic-title').text.to_sym
+         inner_key = details.css('.characteristic-title').text
          inner_value = details.css('div.star').attribute('class').value[-1].to_i
          outer_hash[key][:details][inner_key] = inner_value
       end
