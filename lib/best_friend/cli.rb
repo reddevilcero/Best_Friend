@@ -33,7 +33,7 @@ class CLI
 
   def welcome
     system 'clear'
-    a = Artii::Base.new :font => 'roman'
+    a = Artii::Base.new :font => 'colossal'
     logo = a.asciify('Best Friend')
     logo = self.pastel.green(logo)
     a = Artii::Base.new :font => 'digital'
@@ -44,7 +44,6 @@ class CLI
     <<~Logo
       #{logo}
       #{heading}
-
     Logo
    
 
@@ -156,9 +155,7 @@ class CLI
     puts self.welcome
 
     ############### Breed Name ###############
-    a = Artii::Base.new :font => 'colossal'
-    name = a.asciify(object.name)
-    name = self.pastel.decorate(name, :bright_blue)
+    name = self.display_name(object.name)
     ############### Table for Bio #############
     bio_table = Terminal::Table.new :title => 'BIO'
     object.bio = self.fit_in_table(object.bio)
@@ -175,7 +172,7 @@ class CLI
     c_table.title = 'Main Characteristics:'
     
     ############### Table for Vital Stats ##################
-    row = [[object.stats.dog_breed_group, object.stats.height, object.stats.weight, object.stats.life_span]]
+    row = [[object.stats.dog_breed_group, object.stats.height, object.stats.weight , object.stats.life_span]]
     headings = ['Dog Breed Group:', 'Height:', 'Weight:', 'Life Span']
     vital_table = Terminal::Table.new :headings => headings, :rows => row
     vital_table.style = {:alignment => :center}
@@ -190,6 +187,12 @@ class CLI
     ==========================================================================================================
     #{vital_table}
     Info
+  end
+
+  def display_name(str)
+    a = Artii::Base.new :font => 'slant'
+    name = a.asciify(str)
+    name = self.pastel.decorate(name, :bright_blue)
   end
 
   def fit_in_table(str)
