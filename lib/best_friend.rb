@@ -4,6 +4,9 @@ require 'open-uri'
 require 'pry'
 require 'tty-prompt'
 require 'async'
+require 'terminal-table'
+require 'pastel'
+require 'artii'
 
 require_relative "best_friend/version"
 require_relative './best_friend/scraper'

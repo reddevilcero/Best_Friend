@@ -1,6 +1,7 @@
 # require_relative './scraper'
 require 'terminal-table'
 require 'pastel'
+require 'artii'
 
 class CLI
 
@@ -145,22 +146,48 @@ class CLI
 
   def display_info(object)
     system 'clear'
+    puts self.welcome
+
+    ############### Breed Name ###############
+    a = Artii::Base.new :font => 'colossal'
+    name = a.asciify(object.name)
+    name = self.pastel.decorate(name, :bright_blue)
+    ############### Table for Bio #############
+    bio_table = Terminal::Table.new :title => 'BIO'
+    object.bio = self.fit_in_table(object.bio)
+    bio_table << [object.bio]
+    bio_table.style = {:width => 105}
+
+    ############### Table for characteristic #####################
     c_table = Terminal::Table.new do |t|
       object.characteristics.each do|c| 
-        t.add_row [c.name, self.pastel.yellow('*'* c.stars)]
+        t.add_row [c.name, self.pastel.bright_yellow('*'* c.stars)]
       end
     end
+    c_table.style = {:all_separators => true}
+    c_table.title = 'Main Characteristics:'
+    
+    ############### Table for Vital Stats ##################
+    row = [[object.stats.dog_breed_group, object.stats.height, object.stats.weight, object.stats.life_span]]
+    headings = ['Dog Breed Group:', 'Height:', 'Weight:', 'Life Span']
+    vital_table = Terminal::Table.new :headings => headings, :rows => row
+    vital_table.style = {:alignment => :center}
+    vital_table.title = 'Vital Stats'
+  
+    ############### Final output #####################
     <<~Info
-     #{object.name.upcase}
+    #{name}
         
-    #{object.bio}
-        Main Characteristics:
+    #{bio_table}
     #{c_table}
     ==========================================================================================================
-
-          Dog Breed Group:        Height:         Weight:             Life Span
-        #{object.stats.dog_breed_group}       #{object.stats.height}        #{object.stats.weight}        #{object.stats.life_span}
+    #{vital_table}
     Info
+  end
+
+  def fit_in_table(str)
+    new_str= str.chars.each_slice(100).map(&:join)
+    new_str.join("\n")
   end
 
   def exit
