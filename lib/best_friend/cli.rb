@@ -67,8 +67,8 @@ class CLI
     else
       list = self.all_breeds_list
       url = self.prompt.enum_select("Select a breed", list, per_page: 10)
-      Scraper.create_breed(url)
-      binding.pry
+      breed_object= Scraper.create_breed(url)
+      puts self.display_info(breed_object)
     end    
   end
 
@@ -133,6 +133,26 @@ class CLI
           self.menu
       end
     end
+  end
+
+  def display_info(object)
+    binding.pry
+    
+
+    <<~Info
+                              #{object.name.upcase}
+        
+      #{object.bio}
+      Main Characteristics:
+      - #{object.characteristics[0].name}         -  Stars #{'*' * (object.characteristics[0].stars)}
+      - #{object.characteristics[1].name}         -  Stars #{'*' * (object.characteristics[1].stars)}
+      - #{object.characteristics[2].name}         -  Stars #{'*' * (object.characteristics[2].stars)}
+      - #{object.characteristics[3].name}         -  Stars #{'*' * (object.characteristics[3].stars)}
+    ==========================================================================================================
+
+          Dog Breed Group:        Height:         Weight:             Life Span
+        #{object.stats.dog_breed_group}       #{object.stats.height}        #{object.stats.weight}        #{object.stats.life_span}
+    Info
   end
 
   def exit

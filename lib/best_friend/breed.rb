@@ -19,7 +19,6 @@ class Breed
       breed.add_stats(breed.stats)
       breed.add_charac(breed.characteristics)
       breed.save
-      binding.pry
     end
  
   end
