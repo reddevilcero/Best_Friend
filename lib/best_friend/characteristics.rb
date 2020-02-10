@@ -1,11 +1,10 @@
 class Characteristic
-
-  attr_accessor :name, :info
-
+  
+  attr_accessor :name, :stars
   def initialize(hash)
     binding.pry
-    @name = hash.keys[0]
-    @info = hash[hash.keys[0]]
+    self.name = hash.keys[0]
+    self.stars = hash[hash.keys[0]]
   end
 
 end

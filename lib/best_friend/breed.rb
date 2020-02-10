@@ -30,7 +30,7 @@ class Breed
   def add_charac(array)
     self.characteristics = []
     array.each do|charac|
-      Characteristic.new(charac)
+      self.characteristics << Characteristic.new(charac)
     end
   end
  
