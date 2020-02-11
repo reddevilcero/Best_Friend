@@ -52,17 +52,25 @@ class CLI
       when 3
         self.breeds_by_AKC
       when 4
-        object= Doogle.new(self.all_breeds_list, self).breed
-        self.display_info(object)
+        self.doogle(self.all_breeds_list)
       when 5 
         self.exit
+    end
+  end
+
+  def doogle(hash)
+    object= Doogle.new(hash).breed
+    if object
+    self.display_info(object)
+    else
+      self.exit
     end
   end
 
   def all_breeds
     input = self.prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
     if input
-      object= Doogle.new(self.all_breeds_list, self).breed
+      object= Doogle.new(self.all_breeds_list).breed
       self.display_info(object)
     else
       list = self.all_breeds_list
@@ -77,25 +85,25 @@ class CLI
     input = self.prompt.enum_select("Select a Group", choices, per_page: 10)
     puts self.welcome
     breeds = Scraper.breeds_by_url(hash[input]) #send the link to breeds_by and return a hash
-    selected_breed_url = reduce_options(breeds)
-    if selected_breed_url
-      breed_object = Scraper.create_breed(selected_breed_url)
-      self.display_info(breed_object)
+    if breeds.size > 50
+      input = self.prompt.yes?("The list of breeds is #{breeds.size} do you rather use Doogle?")
+      if input
+        object = Doogle.new(breeds).breed
+        display_info(object)
+      else
+       display_selected(breeds)
+      end
+    else
+      display_selected(breeds)
     end
   end
 
-  def reduce_options(hash)
-    if hash.size > 50
-      input = self.prompt.yes?("The list of breed is #{hash.size} do you rather use Doogle?")
-      if input
-        display_info(Doogle.new(hash, self).breed)
-      else
-        return url = self.prompt.enum_select("Select a Group", hash, per_page: 10)
-      end
-    else
-      return url = self.prompt.enum_select("Select a Group", hash, per_page: 10)
-    end
+  def display_selected(hash)
+    selected_breed_url = self.prompt.enum_select("Select a Group", hash, per_page: 10)
+    breed_object = Scraper.create_breed(selected_breed_url)
+    self.display_info(breed_object)
   end
+
 
   def group_by_characteristics
     self.group_by(Scraper.group_by_Characteristics)

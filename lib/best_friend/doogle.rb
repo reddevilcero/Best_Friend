@@ -1,15 +1,18 @@
 class Doogle
 
-  attr_reader :hash, :cli, :breed
+  attr_reader :hash, :breed
 
-  def initialize(hash, cli)
+  def initialize(hash)
     @hash = hash
-    @cli = cli
-    puts cli.welcome
     puts self.doogle_logo
     input = self.ask_for_input
     self.result(input)
   end
+  def search(hash)
+    input = self.ask_for_input
+    self.result(input)
+  end
+
   def ask_for_input
     input = TTY::Prompt.new.ask("Type one or more characters of the desire breed.") do |q|
           q.validate /[a-zA-Z]/
@@ -33,7 +36,7 @@ class Doogle
       breed_object =Scraper.create_breed(url)
       @breed = breed_object
     else
-      Doogle.new(self.hash, self.cli)
+      self.search(self.hash)
     end
   end
 
@@ -52,9 +55,7 @@ class Doogle
   def not_found(input)
     again =TTY::Prompt.new.yes?("Sorry but '#{input}'' does not match any know breed name. do you want to try again?")
     if again
-      Doogle.new(self.hash, self.cli)
-    else
-      puts cli.menu 
+      self.search(self.hash)
     end
   end
 

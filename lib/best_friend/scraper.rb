@@ -52,12 +52,6 @@ class Scraper
       key = info.css('div.parent-characteristic').text.strip
       value = info.css('div.parent-characteristic').css('div.star').attribute('class').value[-1].to_i
       outer_hash[key] = value
-      # # Collecting Inner Characteristics and Stars Ratings
-      # info.css('div.child-characteristic').collect do |details|
-      #    inner_key = details.css('.characteristic-title').text
-      #    inner_value = details.css('div.star').attribute('class').value[-1].to_i
-      #    outer_hash[key][:details][inner_key] = inner_value
-      # end
       hash[:characteristics] << outer_hash
     end
     hash
