@@ -1,5 +1,4 @@
 require "nokogiri"
-require 'uri'
 require 'open-uri'
 require 'pry'
 require 'tty-prompt'

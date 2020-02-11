@@ -185,7 +185,8 @@ class CLI
   end
 
   def continue
-    more = self.prompt.yes?('Do You want to find other breed?')
+    more = self.prompt.yes?("Do You want to find other breed?")
+   
     if more
       self.menu
     else
