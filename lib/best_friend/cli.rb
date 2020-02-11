@@ -66,6 +66,7 @@ class CLI
         self.breeds_by_AKC
       when 4
         Doogle.new(self.all_breeds_list)
+        self.continue
       when 5 
         self.exit
     end
@@ -186,7 +187,6 @@ class CLI
 
   def continue
     more = self.prompt.yes?("Do You want to find other breed?")
-   
     if more
       self.menu
     else
