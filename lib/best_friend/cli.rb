@@ -6,7 +6,6 @@ class CLI
     Async do
       self.scrap_data
     end.wait
-    self.start
   end
 
   def pastel
@@ -66,7 +65,7 @@ class CLI
       when 3
         self.breeds_by_AKC
       when 4
-        self.doogle(self.all_breeds_list)
+        Doogle.new(self.all_breeds_list)
       when 5 
         self.exit
     end
@@ -75,7 +74,7 @@ class CLI
   def all_breeds
     input = self.prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
     if input
-      self.doogle(self.all_breeds_list)
+      Doogle.new(self.all_breeds_list)
     else
       list = self.all_breeds_list
       url = self.prompt.enum_select("Select a breed", list, per_page: 10)
@@ -85,7 +84,7 @@ class CLI
     self.continue
   end
 
-  def group_by(hash) #use_doogle=true
+  def group_by(hash) 
     choices = hash.keys
     input = self.prompt.enum_select("Select a Group", choices, per_page: 10)
     puts self.welcome
@@ -93,7 +92,7 @@ class CLI
     if breeds.size > 50
       input = self.prompt.yes?("The list of breeds is #{breeds.size} do you rather use Doogle?")
       if input
-        self.doogle(breeds)
+        Doogle.new(breeds)
       else
         selected_breed_url = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
       end
@@ -113,41 +112,6 @@ class CLI
 
   def breeds_by_AKC
     self.group_by(Scraper.group_by_AKC)
-  end
-
-  def doogle(hash)
-    puts self.welcome
-    puts 'Welcome to DOOGLE your breed finder.'
-    input = self.prompt.ask("Type one or more characters of the desire breed.") do |q|
-      q.validate /[a-zA-Z]/
-    end
-    result = hash.select{|breed| breed.match(/^#{input}/i)}
-    
-    if !result.empty?
-      if result.size > 1
-        result = self.prompt.enum_select("Select a breed", result, per_page: 10)
-        dog_name = all_breeds_list.key(result)
-        url = all_breeds_list[dog_name]
-      else
-        dog_name = result.keys[0]
-        url = result.values[0]
-      end
-      
-      sure = self.prompt.yes?("Can you confirm '#{dog_name}' is your desire breed?")
-      if sure
-        breed_object =Scraper.create_breed(url)
-        puts self.display_info(breed_object)
-      else
-        self.doogle(hash)
-      end
-    else
-       again =self.prompt.yes?("Sorry but '#{input}'' does not match any know breed name. do you want to try again?")
-      if again
-        self.doogle(hash)
-      else
-          self.menu
-      end
-    end
   end
 
   def display_info(object)
