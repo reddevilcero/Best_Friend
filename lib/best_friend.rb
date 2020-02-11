@@ -2,7 +2,6 @@ require "nokogiri"
 require 'open-uri'
 require 'pry'
 require 'tty-prompt'
-require 'async'
 require 'terminal-table'
 require 'pastel'
 require 'artii'

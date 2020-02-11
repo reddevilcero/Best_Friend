@@ -22,7 +22,6 @@ Or install it yourself as:
 
 ## Usage
 
-[![Run on Repl.it](https://repl.it/badge/github/reddevilcero/Best_Friend)](https://repl.it/github/reddevilcero/Best_Friend)
 
 ## Development
 
