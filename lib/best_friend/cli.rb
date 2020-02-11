@@ -90,21 +90,27 @@ class CLI
     input = self.prompt.enum_select("Select a Group", choices, per_page: 10)
     puts self.welcome
     breeds = Scraper.breeds_by_url(hash[input]) #send the link to breeds_by and return a hash
-    if breeds.size > 50
-      input = self.prompt.yes?("The list of breeds is #{breeds.size} do you rather use Doogle?")
+    selected_breed_url = reduce_options(breeds)
+    if selected_breed_url
+      breed_object = Scraper.create_breed(selected_breed_url)
+      puts self.display_info(breed_object)
+    else
+      self.continue
+    end
+  end
+
+  def reduce_options(hash)
+    if hash.size > 50
+      input = self.prompt.yes?("The list of breed is #{hash.size} do you rather use Doogle?")
       if input
-        Doogle.new(breeds)
+        Doogle.new(hash)
       else
-        selected_breed_url = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
+        url = self.prompt.enum_select("Select a Group", hash, per_page: 10)
       end
     else
-      selected_breed_url = self.prompt.enum_select("Select a Group", breeds, per_page: 10)
-      Scraper.create_breed(selected_breed_url)
-      puts "TODO: format in better way"
+      url = self.prompt.enum_select("Select a Group", hash, per_page: 10)
     end
-    breed_object = Scraper.create_breed(selected_breed_url)
-    puts self.display_info(breed_object)
-    self.continue
+    url
   end
 
   def group_by_characteristics

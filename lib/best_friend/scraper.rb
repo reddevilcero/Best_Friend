@@ -34,7 +34,6 @@ class Scraper
   end
 
   def self.breed_info(url)
-
     doc = Nokogiri::HTML(open(url))
     hash = {
       name:doc.css('h1').text,
