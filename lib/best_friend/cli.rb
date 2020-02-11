@@ -2,12 +2,6 @@ class CLI
 
    attr_accessor :all_breeds_list, :group_by_Characteristics, :breeds_by_group
 
-  def initialize
-    Async do
-      self.scrap_data
-    end.wait
-  end
-
   def pastel
     Pastel.new
   end
@@ -16,18 +10,11 @@ class CLI
     TTY::Prompt.new
   end
 
-  def scrap_data
-    self.all_breeds_list = Scraper.all_breeds
-    # TODO do this in Async way.
-    # self.group_by_Characteristics = Scraper.group_by_Characteristics
-    # self.breeds_by_group = Scraper.group_by_AKC
-    puts 'no finish yet'
-  end
-
-
   def start
     puts self.welcome
+    self.all_breeds_list = Scraper.all_breeds
     self.menu
+    
   end
 
   def welcome
@@ -65,8 +52,8 @@ class CLI
       when 3
         self.breeds_by_AKC
       when 4
-        Doogle.new(self.all_breeds_list)
-        self.continue
+        object= Doogle.new(self.all_breeds_list, self).breed
+        self.display_info(object)
       when 5 
         self.exit
     end
@@ -75,14 +62,14 @@ class CLI
   def all_breeds
     input = self.prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
     if input
-      Doogle.new(self.all_breeds_list)
+      object= Doogle.new(self.all_breeds_list, self).breed
+      self.display_info(object)
     else
       list = self.all_breeds_list
       url = self.prompt.enum_select("Select a breed", list, per_page: 10)
       breed_object= Scraper.create_breed(url)
-      puts self.display_info(breed_object)
+      self.display_info(breed_object)
     end   
-    self.continue
   end
 
   def group_by(hash) 
@@ -93,9 +80,7 @@ class CLI
     selected_breed_url = reduce_options(breeds)
     if selected_breed_url
       breed_object = Scraper.create_breed(selected_breed_url)
-      puts self.display_info(breed_object)
-    else
-      self.continue
+      self.display_info(breed_object)
     end
   end
 
@@ -103,14 +88,13 @@ class CLI
     if hash.size > 50
       input = self.prompt.yes?("The list of breed is #{hash.size} do you rather use Doogle?")
       if input
-        Doogle.new(hash)
+        display_info(Doogle.new(hash, self).breed)
       else
-        url = self.prompt.enum_select("Select a Group", hash, per_page: 10)
+        return url = self.prompt.enum_select("Select a Group", hash, per_page: 10)
       end
     else
-      url = self.prompt.enum_select("Select a Group", hash, per_page: 10)
+      return url = self.prompt.enum_select("Select a Group", hash, per_page: 10)
     end
-    url
   end
 
   def group_by_characteristics
@@ -134,13 +118,14 @@ class CLI
     ############### Table for Vital Stats ##################
     vital_table = self.display_vital(object)
     ############### Final output #####################
-    <<~Info
+    puts <<~Info
     #{name} 
     #{bio_table}
     #{c_table}
     ==========================================================================================================
     #{vital_table}
     Info
+    self.continue
   end
 
   def display_name(str)

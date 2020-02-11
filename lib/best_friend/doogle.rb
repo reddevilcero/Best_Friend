@@ -1,10 +1,11 @@
 class Doogle
 
-  attr_reader :hash
+  attr_reader :hash, :cli, :breed
 
-  def initialize(hash)
+  def initialize(hash, cli)
     @hash = hash
-    puts CLI.new.welcome
+    @cli = cli
+    puts cli.welcome
     puts self.doogle_logo
     input = self.ask_for_input
     self.result(input)
@@ -24,16 +25,15 @@ class Doogle
     else
       self.not_found(input)
     end
-    
   end
 
   def right_breed(breed, url)
     sure = TTY::Prompt.new.yes?("Can you confirm '#{breed}' is your desire breed?")
     if sure
       breed_object =Scraper.create_breed(url)
-      puts CLI.new.display_info(breed_object)
+      @breed = breed_object
     else
-      Doogle.new(self.hash)
+      Doogle.new(self.hash, self.cli)
     end
   end
 
@@ -52,17 +52,14 @@ class Doogle
   def not_found(input)
     again =TTY::Prompt.new.yes?("Sorry but '#{input}'' does not match any know breed name. do you want to try again?")
     if again
-      Doogle.new(self.hash)
+      Doogle.new(self.hash, self.cli)
     else
-      puts CLI.new.menu 
+      puts cli.menu 
     end
   end
 
   def doogle_logo
     p = Pastel.new
-    #why i can't access to this method inside
-    # blue= p.method(:blue)
-  
     <<-logo
                         Welcome                          
                           to                             
