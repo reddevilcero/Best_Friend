@@ -88,13 +88,12 @@ class CLI
     if breeds.size > 50
       input = self.prompt.yes?("The list of breeds is #{breeds.size} do you rather use Doogle?")
       if input
-        object = Doogle.new(breeds).breed
-        display_info(object)
+        self.doogle(breeds)
       else
-       display_selected(breeds)
+       self.display_selected(breeds)
       end
     else
-      display_selected(breeds)
+      self.display_selected(breeds)
     end
   end
 
