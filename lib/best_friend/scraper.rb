@@ -15,14 +15,14 @@ class Scraper
       doc = Nokogiri::HTML(open(url))
       hash={}
       breeds_list = doc.css('.list-item-title').collect do |breed| 
-        hash[breed.text.to_sym] = breed.attribute('href').value
+        hash[breed.text] = breed.attribute('href').value
       end
       hash
     end
 
   def self.all_breeds
-    self.breeds_by_url('https://dogtime.com/dog-breeds/profiles/')
-   
+    info = self.breeds_by_url('https://dogtime.com/dog-breeds/profiles/')
+    Breed.instance_by_hash(info)
   end
 
   def self.group_by_Characteristics

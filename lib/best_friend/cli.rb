@@ -1,6 +1,5 @@
 class CLI
 
-   attr_accessor :all_breeds_list
   def pastel
     Pastel.new
   end
@@ -11,7 +10,7 @@ class CLI
 
   def start
     puts self.welcome
-    self.all_breeds_list = Scraper.all_breeds
+    Scraper.all_breeds
     self.menu
     
   end
@@ -70,14 +69,15 @@ class CLI
   end
 
   def all_breeds
-    input = self.prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
+    all_breeds_list = Breed.all.collect{|i| i.name}
+    input = self.prompt.yes?("The list of breed is #{all_breeds_list.size} do you no prefer use Doogle.")
     if input
       puts Doogle.new.doogle_logo
-      object= Doogle.new.search(self.all_breeds_list)
+      object= Doogle.new.search(all_breeds_list)
       self.display_info(object)
     else
-      list = self.all_breeds_list
-      url = self.prompt.enum_select("Select a breed", list, per_page: 10)
+      input = self.prompt.enum_select("Select a breed", all_breeds_list, per_page: 10)
+      url = Breed.find_by_regex(input)
       breed_object= Scraper.create_breed(url)
       self.display_info(breed_object)
     end   
