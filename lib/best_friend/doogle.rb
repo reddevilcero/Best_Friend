@@ -2,15 +2,16 @@ class Doogle
 
   attr_reader :hash, :breed
 
-  def initialize(hash)
-    @hash = hash
-    puts self.doogle_logo
-    input = self.ask_for_input
-    self.result(input)
-  end
+  # def initialize
+  #   @hash = hash
+  #   input = self.ask_for_input
+  #   self.result(input)
+  # end
   def search(hash)
+    @hash = hash
     input = self.ask_for_input
     self.result(input)
+    self.breed
   end
 
   def ask_for_input

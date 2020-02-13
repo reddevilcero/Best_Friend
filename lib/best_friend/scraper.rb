@@ -3,7 +3,7 @@ class Scraper
   def self.group_by(url)
      doc= Nokogiri::HTML(open(url))
     hash = {}
-    doc.css('li.item.paws').collect do |div| 
+    doc.css('li.item.paws').each do |div| 
       key = div.css('h3').text
       value = div.css('a').attribute('href').value
       hash[key.to_sym] = value

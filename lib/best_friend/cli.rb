@@ -1,7 +1,6 @@
 class CLI
 
-   attr_accessor :all_breeds_list, :group_by_Characteristics, :breeds_by_group
-
+   attr_accessor :all_breeds_list
   def pastel
     Pastel.new
   end
@@ -16,6 +15,7 @@ class CLI
     self.menu
     
   end
+
 
   def welcome
     system 'clear'
@@ -53,13 +53,15 @@ class CLI
         self.breeds_by_AKC
       when 4
         self.doogle(self.all_breeds_list)
+
       when 5 
         self.exit
     end
   end
 
   def doogle(hash)
-    object= Doogle.new(hash).breed
+    puts Doogle.new.doogle_logo
+    object= Doogle.new.search(hash)
     if object
     self.display_info(object)
     else
@@ -70,7 +72,8 @@ class CLI
   def all_breeds
     input = self.prompt.yes?("The list of breed is #{self.all_breeds_list.size} do you no prefer use Doogle.")
     if input
-      object= Doogle.new(self.all_breeds_list).breed
+      puts Doogle.new.doogle_logo
+      object= Doogle.new.search(self.all_breeds_list)
       self.display_info(object)
     else
       list = self.all_breeds_list
