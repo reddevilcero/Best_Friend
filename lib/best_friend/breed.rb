@@ -11,7 +11,6 @@ class Breed
         breed.save
       end
     end
-   
   end
 
   def self.find_by_regex(input)
@@ -68,6 +67,21 @@ class Breed
     array.each do|charac|
       self.characteristics << Characteristic.new(charac)
     end
+  end
+
+  def doogle_logo
+    p = Pastel.new
+    <<-logo
+                        Welcome                          
+                          to                             
+    .#{p.blue'%%%%%'}....#{p.red('%%%%')}....#{p.yellow('%%%%')}....#{p.blue('%%%%')}...#{p.green('%%')}......#{p.red('%%%%%%')}.
+    .#{p.blue('%%')}..#{p.blue('%%')}..#{p.red('%%')}..#{p.red('%%')}..#{p.yellow('%%')}..#{p.yellow('%%')}..#{p.blue('%%')}......#{p.green('%%')}......#{p.red('%%')}..... 
+    .#{p.blue('%%')}..#{p.blue('%%')}..#{p.red('%%')}..#{p.red('%%')}..#{p.yellow('%%')}..#{p.yellow('%%')}..#{p.blue('%%')}.#{p.blue('%%%')}..#{p.green('%%')}......#{p.red('%%%%')}... 
+    .#{p.blue('%%')}..#{p.blue('%%')}..#{p.red('%%')}..#{p.red('%%')}..#{p.yellow('%%')}..#{p.yellow('%%')}..#{p.blue('%%')}..#{p.blue('%%')}..#{p.green('%%')}......#{p.red('%%')}..... 
+    .#{p.blue('%%%%%')}....#{p.red('%%%%')}....#{p.yellow('%%%%')}....#{p.blue('%%%%')}...#{p.green('%%%%%%')}..#{p.red('%%%%%%')}. 
+    #{p.cyan'................................................'} 
+    
+    logo
   end
  
  

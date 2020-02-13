@@ -59,7 +59,7 @@ class CLI
   end
 
   def doogle(hash)
-    puts Doogle.new.doogle_logo
+    puts Breed.new.doogle_logo
     object= Doogle.new.search(hash)
     if object
     self.display_info(object)
@@ -72,8 +72,9 @@ class CLI
     all_breeds_list = Breed.all.collect{|i| i.name}
     input = self.prompt.yes?("The list of breed is #{all_breeds_list.size} do you no prefer use Doogle.")
     if input
-      puts Doogle.new.doogle_logo
-      object= Doogle.new.search(all_breeds_list)
+      puts Breed.new.doogle_logo
+      self.ask_for_input
+      object= Breed.find_by_regex(input)
       self.display_info(object)
     else
       input = self.prompt.enum_select("Select a breed", all_breeds_list, per_page: 10)
@@ -81,6 +82,13 @@ class CLI
       breed_object= Scraper.update_breed(breed_object)
       self.display_info(breed_object)
     end   
+  end
+
+  def ask_for_input
+    input = TTY::Prompt.new.ask("Type one or more characters of the desire breed.") do |q|
+          q.validate /[a-zA-Z]/
+        end
+    input
   end
 
   def group_by(hash) 
