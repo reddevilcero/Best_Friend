@@ -57,9 +57,10 @@ class Scraper
     hash
   end
 
-  def self.create_breed(url)
+  def self.update_breed(object)
+    url = object.url
     info = self.breed_info(url)
-    Breed.create_by_hash(info)
+    Breed.update_by_hash(info, object)
   end
 
 

@@ -77,8 +77,8 @@ class CLI
       self.display_info(object)
     else
       input = self.prompt.enum_select("Select a breed", all_breeds_list, per_page: 10)
-      url = Breed.find_by_regex(input)
-      breed_object= Scraper.create_breed(url)
+      breed_object = Breed.find_by_regex(input)
+      breed_object= Scraper.update_breed(breed_object)
       self.display_info(breed_object)
     end   
   end

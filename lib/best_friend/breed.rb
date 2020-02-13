@@ -18,7 +18,6 @@ class Breed
     result = self.all.select {|ins| ins.name.match(/^#{input}/i)}
     
     if !result.empty?
-      binding.pry
       self.to_one_result(result)
     else
       self.not_found(input)
@@ -31,10 +30,8 @@ class Breed
       breed_name = self.hash.key(hash)
       url = self.hash[breed_name]
     else
-      breed_name = array[0].name
-      url = array[0].url
+      return array[0]
     end
-    return breed_name, url
   end
   
   def self.not_found(input)
@@ -52,16 +49,15 @@ class Breed
     @@all << self
   end
 
-  def self.create_by_hash(hash)
-    Breed.new.tap do |breed| 
-      hash.each do |key, value| 
-        breed.send("#{key}=", value)
-      end
-      breed.add_stats(breed.stats)
-      breed.add_charac(breed.characteristics)
-      breed.save
+  def self.update_by_hash(hash, object)
+
+    hash.each do |key, value| 
+      object.send("#{key}=", value)
     end
- 
+    object.add_stats(object.stats)
+    object.add_charac(object.characteristics)
+    object.save
+    object
   end
 
   def add_stats(hash)
