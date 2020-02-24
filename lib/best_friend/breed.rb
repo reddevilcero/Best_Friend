@@ -65,7 +65,7 @@ class Breed
   def add_charac(array)
     self.characteristics = []
     array.each do|charac|
-      self.characteristics << Characteristic.new(charac)
+      self.characteristics << Characteristic.new_from_hash(charac)
     end
   end
 
